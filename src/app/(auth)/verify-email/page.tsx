@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 const verifyEmail = () => {
   return (
-    <div className="flex justify-center items-center min-h-screen bg-[url('/auth_page_bg.png')] bg-no-repeat bg-cover origin-center relative z-0 text-main-color ">
+    <div className="flex justify-center items-center min-h-screen  relative z-0 text-main-color ">
       <div className="absolute inset-0 bg-black opacity-10 z-10"></div>
       <div className="flex justify-center items-center w-[441px]   mx-auto text-main-color md:px-12 px-11 py-10 rounded-[40px] bg-white z-20">
         <div>

@@ -34,7 +34,7 @@ const SidebarContainer = ({ collapsed }: { collapsed: boolean }) => {
 
   return (
     <Sider
-      width={230}
+      width={300}
       theme="light"
       collapsible
       collapsed={collapsed}
@@ -75,7 +75,7 @@ const SidebarContainer = ({ collapsed }: { collapsed: boolean }) => {
           <Link href={"/login"} className="w-full">
             <Button
               icon={<IoLogInOutline size={22} />}
-              className=" w-full !bg-black !border-main-color flex items-center justify-center font-600 text-18  border border-white text-white !py-5"
+              className=" w-full !bg-gray-500  flex items-center justify-center font-600 text-18  border-none  text-white !py-5 hover:bg-gray-600 hover:text-white"
             >
               Log Out
             </Button>

@@ -57,12 +57,7 @@ const ForgetPasswordModal = ({ open, setOpen }: TPropsType) => {
             theme={{
               components: {
                 Input: {
-                  colorBgContainer: "var(--color-primary-gray)",
-                  colorText: "#fff",
-                  colorTextPlaceholder: "#fff",
-                },
-                Form: {
-                  labelColor: "#fff",
+                  colorBgContainer: "#E6F4EA",
                 },
               },
             }}

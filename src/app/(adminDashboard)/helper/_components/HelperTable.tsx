@@ -7,50 +7,49 @@ import {
   PopconfirmProps,
   TableProps,
 } from "antd";
-
+// import UserDetails from "./UserDetails";
 import { useState } from "react";
 import DataTable from "@/utils/DataTable";
-import { CgUnblock } from "react-icons/cg";
-import { Eye, Search } from "lucide-react";
-import VendorDetails from "./VendorDetails";
+import { Eye, Search, Trash2 } from "lucide-react";
+import HelperDetailsModal from "./HelperDetailsModal";
 
 type TDataType = {
   key?: number;
   serial: number;
   name: string;
   email: string;
-  phone: string;
   date: string;
-  type: string;
+  phone: string;
 };
-const data: TDataType[] = Array.from({ length: 18 }).map((data, inx) => ({
+const data: TDataType[] = Array.from({ length: 18 }).map((_, inx) => ({
   key: inx,
   serial: inx + 1,
-  name: "James Tracy",
+  name: "Devon Lane",
   email: "james1234@gmail.comm",
-  phone: "12345678",
-  date: "11 Oct, 2024",
-  type: "User",
+  date: "1 Aug, 2025",
+  phone: "1234567890",
 }));
 
 const confirmBlock: PopconfirmProps["onConfirm"] = (e) => {
   console.log(e);
-  message.success("Blocked the user");
+  message.success("Deleted the helper");
 };
 
-const VendorsTable = () => {
+const HelperTable = () => {
   const [open, setOpen] = useState(false);
 
   const columns: TableProps<TDataType>["columns"] = [
     {
-      title: "#SL",
+      title: "#SI",
       dataIndex: "serial",
     },
+
     {
       title: "User Name",
       dataIndex: "name",
+      align: "center",
       render: (text, record) => (
-        <div className="flex items-center gap-x-1">
+        <div className="flex justify-center items-center gap-x-1">
           <Image
             src={"/user-profile.png"}
             alt="profile-picture"
@@ -65,35 +64,38 @@ const VendorsTable = () => {
     {
       title: "Email",
       dataIndex: "email",
+      align: "center",
+    },
+    {
+      title: "Phone no.",
+      dataIndex: "phone",
+      align: "center",
     },
 
     {
-      title: "Phone number",
-      dataIndex: "phone",
-    },
-    {
       title: "Join Date",
       dataIndex: "date",
+      align: "center",
     },
-    
+
     {
       title: "Action",
       dataIndex: "action",
       render: () => (
-        <div className="flex gap-2 ">
+        <div className="flex gap-x-2">
           <Eye
             size={22}
             color="var(--color-primary-gray)"
             onClick={() => setOpen(!open)}
           />
           <Popconfirm
-            title="Block the user"
-            description="Are you sure to block this user?"
+            title="Delete the Helper"
+            description="Are you sure to delete this helper?"
             onConfirm={confirmBlock}
             okText="Yes"
             cancelText="No"
           >
-            <CgUnblock size={22} color="#CD0335" />
+            <Trash2 size={20} color="#CD0335" />
           </Popconfirm>
         </div>
       ),
@@ -101,19 +103,21 @@ const VendorsTable = () => {
   ];
 
   return (
-    <div className="rounded-md">
-      <div className="flex justify-between items-center  py-5">
-        <h1 className="  lg:text-4xl text-2xl font-medium text-text-color">Vendors</h1>
+    <div className=" bg-[#E6F4EA] mt-5 rounded-xl">
+      <div className="flex justify-between items-center  py-5  px-3 ">
+        <h1 className="  lg:text-3xl text-2xl font-medium text-text-color">
+          Helper List
+        </h1>
         <Input
           className="!w-[250px] lg:!w-[350px] !py-2 !bg-white  placeholder:text-white"
-          placeholder="Search vendor..."
+          placeholder="Search..."
           prefix={<Search size={20} color="#000"></Search>}
         ></Input>
       </div>
       <DataTable columns={columns} data={data} pageSize={10}></DataTable>
-      <VendorDetails open={open} setOpen={setOpen}></VendorDetails>
+      <HelperDetailsModal open={open} setOpen={setOpen}></HelperDetailsModal>
     </div>
   );
 };
 
-export default VendorsTable;
+export default HelperTable;

@@ -14,7 +14,7 @@ const poppins = Poppins({
 
 export const metadata: Metadata = {
   title: {
-    default: "Admin Dashboard | AVA VICO CAR HIRE",
+    default: "Admin Dashboard | Direct Hiring",
     template: "%s | SoleSwap",
   },
   description: "This is Official Application Dashboard for SoleSwap",

@@ -1,9 +1,10 @@
 "use client";
-import { Image, Input, message, PopconfirmProps, TableProps } from "antd";
+import { Image, Input, message, Popconfirm, PopconfirmProps, TableProps } from "antd";
 // import UserDetails from "./UserDetails";
 import { useState } from "react";
 import DataTable from "@/utils/DataTable";
-import { Eye, Search } from "lucide-react";
+import { Eye, Search, Trash2 } from "lucide-react";
+import EmployerDetailsModal from "./EmployerDetailsModal";
 
 type TDataType = {
   key?: number;
@@ -11,6 +12,7 @@ type TDataType = {
   name: string;
   email: string;
   date: string;
+  phone: string;
 };
 const data: TDataType[] = Array.from({ length: 18 }).map((_, inx) => ({
   key: inx,
@@ -18,11 +20,12 @@ const data: TDataType[] = Array.from({ length: 18 }).map((_, inx) => ({
   name: "Devon Lane",
   email: "james1234@gmail.comm",
   date: "1 Aug, 2025",
+  phone: "1234567890",
 }));
 
 const confirmBlock: PopconfirmProps["onConfirm"] = (e) => {
   console.log(e);
-  message.success("Blocked the user");
+  message.success("Deleted the Employer");
 };
 
 const EmployerTable = () => {
@@ -35,7 +38,7 @@ const EmployerTable = () => {
     },
 
     {
-      title: "Name",
+      title: "User Name",
       dataIndex: "name",
       align: "center",
       render: (text, record) => (
@@ -56,9 +59,14 @@ const EmployerTable = () => {
       dataIndex: "email",
       align: "center",
     },
+    {
+      title: "Phone no.",
+      dataIndex: "phone",
+      align: "center",
+    },
 
     {
-      title: "Date",
+      title: "Join Date",
       dataIndex: "date",
       align: "center",
     },
@@ -67,11 +75,22 @@ const EmployerTable = () => {
       title: "Action",
       dataIndex: "action",
       render: () => (
-        <Eye
-          size={22}
-          color="var(--color-primary-gray)"
-          onClick={() => setOpen(!open)}
-        />
+        <div className="flex gap-x-2">
+          <Eye
+            size={22}
+            color="var(--color-primary-gray)"
+            onClick={() => setOpen(!open)}
+          />
+          <Popconfirm
+            title="Delete the employer"
+            description="Are you sure to delete this employer?"
+            onConfirm={confirmBlock}
+            okText="Yes"
+            cancelText="No"
+          >
+            <Trash2 size={20} color="#CD0335" />
+          </Popconfirm>
+        </div>
       ),
     },
   ];
@@ -89,7 +108,10 @@ const EmployerTable = () => {
         ></Input>
       </div>
       <DataTable columns={columns} data={data} pageSize={10}></DataTable>
-      {/* <EarningDetails open={open} setOpen={setOpen}></EarningDetails> */}
+      <EmployerDetailsModal
+        open={open}
+        setOpen={setOpen}
+      ></EmployerDetailsModal>
     </div>
   );
 };

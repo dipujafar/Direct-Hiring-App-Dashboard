@@ -6,6 +6,10 @@ import { IoIosArrowForward } from "react-icons/io";
 
 const links = [
   {
+    lable: "On Boarding",
+    path: "on-boarding",
+  },
+  {
     lable: "Personal Information",
     path: "personal-information",
   },
@@ -37,7 +41,7 @@ const SettingContainer = () => {
             <div
               key={inx}
               onClick={() => setOpen(!open)}
-              className="bg-[#fff]   p-5 rounded flex justify-between items-center cursor-pointer"
+              className="bg-[#E6F4EA]   p-5 rounded flex justify-between items-center cursor-pointer"
             >
               <h4 className="text-[#333] font-medium">
                 {link?.lable}
@@ -48,7 +52,7 @@ const SettingContainer = () => {
         } else {
           return (
             <Link key={link.path} href={`/${link.path}`}>
-              <div className="bg-[#fff]  p-5 rounded flex justify-between items-center">
+              <div className="bg-[#E6F4EA]  p-5 rounded flex justify-between items-center">
                 <h4 className="text-[#333] font-medium">
                   {link?.lable}
                 </h4>

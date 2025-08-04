@@ -28,7 +28,7 @@ const UpdatePasswordModal = ({ open, setOpen }: TPropsType) => {
       >
         <div className="py-14">
           <div
-            className="w-12 h-12 bg-main-color  absolute top-2 right-2 rounded-full cursor-pointer"
+            className="w-12 h-12 bg-red-500  absolute top-2 right-2 rounded-full cursor-pointer"
             onClick={() => setOpen(false)}
           >
             <RiCloseLargeLine
@@ -51,13 +51,10 @@ const UpdatePasswordModal = ({ open, setOpen }: TPropsType) => {
             theme={{
               components: {
                 Input: {
-                  colorBgContainer: "var(--color-primary-gray)",
-                  colorText: "#fff",
-                  colorTextPlaceholder: "#fff",
+                  colorBgContainer: "#E6F4EA",
+                  
                 },
-                Form: {
-                  labelColor: "#fff",
-                },
+                
               },
             }}
           >
@@ -100,6 +97,7 @@ const UpdatePasswordModal = ({ open, setOpen }: TPropsType) => {
                 size="large"
                 block
                 className="!border-none"
+
               >
                 Update Password
               </Button>
