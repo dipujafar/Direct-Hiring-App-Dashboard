@@ -20,18 +20,20 @@ import {  EyeClosed, EyeOff } from "lucide-react";
 import shadowImage1 from "@/assets/image/shadow_image.png";
 import shadowImage2 from "@/assets/image/shadow_image_down.png";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 const formSchema = z.object({
   email: z.string().email({
     message: "Please enter a valid email address.",
   }),
-  password: z.string().min(6, {
-    message: "Password must be at least 6 characters.",
+  password: z.string().min(1, {
+    message: "Password is required.",
   }),
   rememberPassword: z.boolean().optional(),
 });
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -42,7 +44,7 @@ export default function LoginForm() {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+    router.push("/dashboard");
   }
 
   return (
