@@ -30,13 +30,13 @@ const DashboardPage = () => {
         </div>
       </div>
       <div className="flex flex-col lg:grid lg:grid-cols-3 2xl:grid-cols-4 gap-5">
-  <div className="lg:col-span-2 2xl:col-span-3">
-    <LatestUser />
-  </div>
-  <div className="lg:col-span-1">
-    <UserRatioChart />
-  </div>
-</div>
+        <div className="lg:col-span-2 2xl:col-span-3">
+          <LatestUser />
+        </div>
+        <div className="lg:col-span-1">
+          <UserRatioChart />
+        </div>
+      </div>
     </div>
   );
 };
