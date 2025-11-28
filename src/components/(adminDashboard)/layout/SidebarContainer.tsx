@@ -6,12 +6,18 @@ import Link from "next/link";
 import logo from "@/assets/logo.png";
 import { navLinks } from "@/utils/navLinks";
 import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { IoLogInOutline } from "react-icons/io5";
+import { useAppDispatch } from "@/redux/hooks";
+import { logout } from "@/redux/features/authSlice";
+import { toast } from "sonner";
+import Cookies from "js-cookie";
 
 const SidebarContainer = ({ collapsed }: { collapsed: boolean }) => {
   const [current, setCurrent] = useState("dashboard");
   const currentPath = usePathname();
+  const dispatch = useAppDispatch();
+  const router = useRouter();
 
   const onClick: MenuProps["onClick"] = (e) => {
     setCurrent(e.key);
@@ -31,6 +37,17 @@ const SidebarContainer = ({ collapsed }: { collapsed: boolean }) => {
       setCurrent("dashboard");
     }
   }, []);
+
+  const handleLogout = () => {
+    const res = dispatch(logout());
+    Cookies.remove("access-token", { path: "/" });
+    // console.log("logout res", res);
+    if (res?.type == "auth/logout") {
+      toast.success("Logout Successfully");
+      router.refresh();
+      router.push("/login");
+    }
+  };
 
   return (
     <Sider
@@ -74,6 +91,7 @@ const SidebarContainer = ({ collapsed }: { collapsed: boolean }) => {
         {!collapsed ? (
           <Link href={"/login"} className="w-full">
             <Button
+              onClick={handleLogout}
               icon={<IoLogInOutline size={22} />}
               className=" w-full !bg-gray-500  flex items-center justify-center font-600 text-18  border-none  text-white !py-5 hover:bg-gray-600 hover:text-white"
             >

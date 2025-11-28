@@ -3,4 +3,5 @@ export const tagTypes = {
   profile: "profile",
 } as const;
 
+
 export const tagTypesList = [tagTypes.auth, tagTypes.profile];

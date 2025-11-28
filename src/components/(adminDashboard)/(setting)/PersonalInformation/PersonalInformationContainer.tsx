@@ -5,9 +5,14 @@ import { useRouter } from "next/navigation";
 import { FaArrowLeft } from "react-icons/fa6";
 import { FiEdit } from "react-icons/fi";
 import profile from "@/assets/image/adminProfile.png";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Camera, Trash2, X } from "lucide-react";
+import {
+  useMyProfileQuery,
+  useUpdateProfileMutation,
+} from "@/redux/api/authApi";
+import { getErrorMessage } from "@/utils/getErrorMessage";
 
 const PersonalInformationContainer = () => {
   const route = useRouter();
@@ -16,12 +21,37 @@ const PersonalInformationContainer = () => {
   const [fileName, setFileName] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
 
-  // @ts-expect-error: Ignoring TypeScript error due to inferred 'any' type for 'values' which is handled in the form submit logic
-  const handleSubmit = (values) => {
-    toast.success("Successfully Change personal information", {
-      duration: 1000,
-    });
-    setEdit(false);
+  const [updateProfile, { isLoading }] = useUpdateProfileMutation();
+  const { data: profileData } = useMyProfileQuery({});
+  const myData = profileData?.data || {};
+
+  const handleSubmit = async (values: any) => {
+    const formInfo = {
+      firstName: values.name,
+      email: values.email,
+      phoneNumber: values.phone,
+    };
+
+    try {
+      const formData = new FormData();
+      formData.append("data", JSON.stringify(formInfo));
+
+      if (fileName) {
+        formData.append("profile", fileName);
+      }
+
+      const res = await updateProfile(formData).unwrap();
+
+      if (res.success) {
+        toast.success("Successfully Change personal information", {
+          duration: 1000,
+        });
+        setEdit(false);
+      }
+    } catch (error) {
+      console.log("Profile updated error::", error);
+      toast.error(getErrorMessage(error));
+    }
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,6 +73,15 @@ const PersonalInformationContainer = () => {
     input.value = "";
   };
 
+  useEffect(() => {
+    form.setFieldsValue({
+      name: myData?.firstName,
+      lastName: myData?.lastName,
+      email: myData?.email,
+      phone: myData?.phoneNumber,
+    });
+  }, [myData]);
+
   return (
     <div>
       <div className="flex justify-between items-center">
@@ -62,7 +101,7 @@ const PersonalInformationContainer = () => {
             style={{
               backgroundColor: "var(--color-main)",
               border: "none",
-              color: "var(--color-secondary)", 
+              color: "var(--color-secondary)",
             }}
             onClick={() => setEdit(true)}
             size="large"
@@ -80,11 +119,11 @@ const PersonalInformationContainer = () => {
           <div className="space-y-1 relative">
             <div className="relative group">
               <Image
-                src={imageUrl || profile}
+                src={imageUrl || myData?.profile}
                 alt="adminProfile"
                 width={1200}
                 height={1200}
-                className="size-36 rounded-full flex justify-center items-center"
+                className="size-36 rounded-full flex justify-center items-center object-cover"
               ></Image>
 
               {/* cancel button */}
@@ -117,7 +156,9 @@ const PersonalInformationContainer = () => {
                 </div>
               </label>
             </div>
-            <h3 className="text-2xl text-center">Admin</h3>
+            <h3 className="text-2xl text-center capitalize">
+              {myData?.role || ""}
+            </h3>
           </div>
         </div>
         {/* form */}
@@ -142,11 +183,6 @@ const PersonalInformationContainer = () => {
               layout="vertical"
               style={{
                 marginTop: "25px",
-              }}
-              initialValues={{
-                name: "James Tracy",
-                email: "enrique@gmail.com",
-                phone: "3000597212",
               }}
             >
               {/*  input  name */}
@@ -192,6 +228,7 @@ const PersonalInformationContainer = () => {
                 <Button
                   htmlType="submit"
                   size="large"
+                  loading={isLoading}
                   block
                   style={{ border: "none" }}
                 >

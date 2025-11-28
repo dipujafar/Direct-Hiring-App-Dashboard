@@ -27,6 +27,14 @@ const authApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: [tagTypes.auth, tagTypes.profile],
     }),
+
+    myProfile: build.query({
+      query: () => ({
+        url: "/users/my-profile",
+        method: "GET",
+      }),
+      providesTags: [tagTypes.auth, tagTypes.profile],
+    }),
   }),
 });
 
@@ -34,4 +42,5 @@ export const {
   useLoginMutation,
   useChangePasswordMutation,
   useUpdateProfileMutation,
+  useMyProfileQuery,
 } = authApi;

@@ -24,6 +24,8 @@ import { useRouter } from "next/navigation";
 import { useLoginMutation } from "@/redux/api/authApi";
 import { toast } from "sonner";
 import { getErrorMessage } from "@/utils/getErrorMessage";
+import { useAppDispatch } from "@/redux/hooks";
+import { setUser } from "@/redux/features/authSlice";
 
 const formSchema = z.object({
   email: z.string({ message: "Email is required." }),
@@ -37,6 +39,8 @@ export default function LoginForm() {
   const [makeLogin, { isLoading }] = useLoginMutation();
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
+  const dispatch = useAppDispatch();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -46,12 +50,22 @@ export default function LoginForm() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log("values__", values);
+    // console.log("values__", values);
 
     try {
       const res = await makeLogin(values).unwrap();
-      console.log("res", res);
-      toast.success("Login successful!");
+      // console.log("res", res.data.accessToken);
+
+      if (res.success) {
+        dispatch(
+          setUser({
+            user: res.data.user,
+            token: res.data.accessToken,
+          })
+        );
+        toast.success("Login successful!");
+        router.push("/dashboard");
+      }
     } catch (error) {
       console.log("login time error::", error);
       toast.error(getErrorMessage(error));
