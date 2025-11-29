@@ -1,12 +1,19 @@
+import { useTransactionDetailsQuery } from "@/redux/api/adminApi";
+import { formatCurrency } from "@/utils/formatCurrency";
 import { Modal } from "antd";
 import { RiCloseLargeLine } from "react-icons/ri";
+import { format } from "date-fns";
 
 type TPropsType = {
   open: boolean;
   setOpen: (collapsed: boolean) => void;
+  tranId: string;
 };
 
-const EarningDetails = ({ open, setOpen }: TPropsType) => {
+const EarningDetails = ({ open, setOpen, tranId }: TPropsType) => {
+  const { data } = useTransactionDetailsQuery(tranId);
+  const tranDetails = data?.data;
+
   return (
     <Modal
       open={open}
@@ -35,30 +42,34 @@ const EarningDetails = ({ open, setOpen }: TPropsType) => {
         <div className="mt-10 space-y-4">
           <div className="flex justify-between">
             <h4>Transaction ID :</h4>
-            <p className="font-medium">#12345678</p>
+            <p className="font-medium">{tranDetails?.tranId}</p>
           </div>
-          <hr  className="border-[#B0DEBD]"/>
+          <hr className="border-[#B0DEBD]" />
           <div className="flex justify-between">
             <h4>Date :</h4>
-            <p className="font-medium">05-01-2025</p>
-          </div>
-          <hr  className="border-[#B0DEBD]"/>
-          <div className="flex justify-between">
-            <h4>A/C number :</h4>
-            <p className="font-medium">****  ****  ****  *545</p>
+            <p className="font-medium">
+              {" "}
+              {tranDetails?.createdAt
+                ? format(
+                    new Date(tranDetails.createdAt),
+                    "dd MMM, yyyy - hh:mm a"
+                  )
+                : ""}
+            </p>
           </div>
 
-          <hr  className="border-[#B0DEBD]"/>
+          <hr className="border-[#B0DEBD]" />
           <div className="flex justify-between">
             <h4>Transaction amount :</h4>
-            <p className="font-medium">$260</p>
+            <p className="font-medium">{formatCurrency(tranDetails?.amount)}</p>
           </div>
-         <hr  className="border-[#B0DEBD]"/>
+          <hr className="border-[#B0DEBD]" />
           <div className="flex justify-between">
-            <h4>Package  name :</h4>
-            <p className="font-medium">Connect Sometimes</p>
+            <h4>Package name :</h4>
+            <p className="font-medium capitalize">
+              {tranDetails?.packageId?.name}
+            </p>
           </div>
-        
         </div>
       </div>
     </Modal>

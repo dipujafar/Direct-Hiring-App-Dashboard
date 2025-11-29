@@ -1,15 +1,16 @@
-import React from 'react';
-import EarningStatic from './EarningStatic';
-import EarningTable from './EarningTable';
+"use client";
 
+import React from "react";
+import EarningStatic from "./EarningStatic";
+import EarningTable from "./EarningTable";
 
 const EarningContainer = () => {
-    return (
-        <div>
-            <EarningStatic></EarningStatic>
-            <EarningTable></EarningTable>
-        </div>
-    );
+  return (
+    <div>
+      <EarningStatic></EarningStatic>
+      <EarningTable></EarningTable>
+    </div>
+  );
 };
 
 export default EarningContainer;

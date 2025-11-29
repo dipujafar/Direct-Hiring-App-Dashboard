@@ -13,21 +13,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-const chartData = [
-  { month: "Jan", earnings: 42 },
-  { month: "Feb", earnings: 32 },
-  { month: "Mar", earnings: 50 },
-  { month: "Apr", earnings: 38 },
-  { month: "May", earnings: 35 },
-  { month: "Jun", earnings: 47 },
-  { month: "Jul", earnings: 49 },
-  { month: "Aug", earnings: 48 },
-  { month: "Sep", earnings: 32 },
-  { month: "Oct", earnings: 49 },
-  { month: "Nov", earnings: 45 },
-  { month: "Dec", earnings: 50 },
-];
+import { useEarningSummaryQuery } from "@/redux/api/adminApi";
+import { useState } from "react";
 
 const chartConfig = {
   earnings: {
@@ -36,11 +23,21 @@ const chartConfig = {
 };
 
 export default function EarningSummaryChart() {
+  const currentYear = new Date().getFullYear();
+  const [year, setYear] = useState(currentYear.toString());
+
+  const { data: earningSummary } = useEarningSummaryQuery({ year });
+  const summary = earningSummary?.data;
+
+  const handleYearChange = (value: string) => {
+    setYear(value);
+  };
+
   return (
     <div className="w-full py-4 px-3 bg-[#E6F4EA] rounded-lg">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-lg font-medium text-gray-700">Earning Summary</h2>
-        <Select defaultValue="2025">
+        <Select defaultValue="2025" onValueChange={handleYearChange}>
           <SelectTrigger className="w-20 h-8 bg-green-400 border-green-400 text-white text-sm">
             <SelectValue />
           </SelectTrigger>
@@ -56,7 +53,7 @@ export default function EarningSummaryChart() {
       <ChartContainer config={chartConfig} className="h-72 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
-            data={chartData}
+            data={summary}
             margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
           >
             <XAxis

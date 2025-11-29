@@ -1,31 +1,25 @@
 "use client";
 import { Image, Input, message, PopconfirmProps, TableProps } from "antd";
 // import UserDetails from "./UserDetails";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DataTable from "@/utils/DataTable";
 import { Eye, Search } from "lucide-react";
 import EarningDetails from "./EarningDetails";
+import { useAllTransactionsQuery } from "@/redux/api/adminApi";
+import { formatDate } from "@/utils/formatDate";
+import { useSearchParams } from "next/navigation";
 
 type TDataType = {
-  key?: number;
-  serial: number;
+  key?: string;
+  _id: string;
   name: string;
   email: string;
   date: string;
   type: string;
   token: string;
   amount: string;
+  profile: string;
 };
-const data: TDataType[] = Array.from({ length: 18 }).map((_, inx) => ({
-  key: inx,
-  serial: 12345678,
-  name: "Devon Lane",
-  email: "james1234@gmail.comm",
-  date: "1 Aug, 2025",
-  type: "User",
-  token: "30 Token",
-  amount: "$30",
-}));
 
 const confirmBlock: PopconfirmProps["onConfirm"] = (e) => {
   console.log(e);
@@ -33,31 +27,63 @@ const confirmBlock: PopconfirmProps["onConfirm"] = (e) => {
 };
 
 const EarningTable = () => {
+  const [selectedTranId, setSelectedTranId] = useState<string>("");
   const [open, setOpen] = useState(false);
+  const searchParams = useSearchParams();
+  const defaultSearch = searchParams.get("search") ?? "";
+  const [search, setSearch] = useState(defaultSearch);
+
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (search) params.set("search", search);
+
+    window.history.replaceState(null, "", `?${params.toString()}`);
+  }, [search]);
+
+  // console.log("search__", search);
+
+  const { data: transactionsData } = useAllTransactionsQuery({
+    searchTerm: search,
+  });
+
+  const transactions = transactionsData?.data?.data || [];
+  const meta = transactionsData?.data?.meta || {};
+
+  const data = transactions?.map((data: any, inx: number) => ({
+    key: data?._id,
+    serial: data?._id?.slice(0, 10),
+    name: `${data?.userId?.firstName || ""} ${data?.userId?.lastName || ""}`,
+    email: data?.userId?.email,
+    date: formatDate(data?.createdAt),
+    type: data?.userId?.role,
+    profile: data?.userId?.profile,
+    token: data?.userId?.token,
+    amount: data?.amount,
+  }));
 
   const columns: TableProps<TDataType>["columns"] = [
     {
       title: "#Tr.ID",
       dataIndex: "serial",
     },
-
     {
       title: "Name",
       dataIndex: "name",
       align: "center",
-      render: (text, record) => (
-        <div className="flex justify-center items-center gap-x-1">
+      render: (_, record) => (
+        <div className="flex justify-center items-center gap-x-2">
           <Image
-            src={"/user-profile.png"}
+            src={record?.profile || "/user-profile.png"}
             alt="profile-picture"
             width={40}
             height={40}
-            className="size-10"
-          ></Image>
-          <p>{text}</p>
+            className="rounded-full object-cover"
+          />
+          <p>{record?.name}</p>
         </div>
       ),
     },
+
     {
       title: "Email",
       dataIndex: "email",
@@ -83,11 +109,15 @@ const EarningTable = () => {
     {
       title: "Action",
       dataIndex: "action",
-      render: () => (
+      render: (_, record) => (
         <Eye
           size={22}
           color="var(--color-primary-gray)"
-          onClick={() => setOpen(!open)}
+          className="cursor-pointer"
+          onClick={() => {
+            setSelectedTranId(record?.key as string);
+            setOpen(true);
+          }}
         />
       ),
     },
@@ -103,10 +133,20 @@ const EarningTable = () => {
           className="!w-[250px] lg:!w-[350px] !py-2 !bg-white  placeholder:text-white"
           placeholder="Search..."
           prefix={<Search size={20} color="#000"></Search>}
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
         ></Input>
       </div>
-      <DataTable columns={columns} data={data} pageSize={10}></DataTable>
-      <EarningDetails open={open} setOpen={setOpen}></EarningDetails>
+      <DataTable
+        columns={columns}
+        data={data}
+        pageSize={meta?.limit || 10}
+      ></DataTable>
+      <EarningDetails
+        tranId={selectedTranId}
+        open={open}
+        setOpen={setOpen}
+      ></EarningDetails>
     </div>
   );
 };

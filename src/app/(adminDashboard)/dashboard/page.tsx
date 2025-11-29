@@ -3,20 +3,6 @@ import LatestUser from "./_components/LatestUser";
 import StatsGrid from "./_components/Stats/StatsGrid";
 import UserRatioChart from "./_components/UserRatioChart";
 
-const statsData = [
-  {
-    title: "Total Earnings",
-    value: "$24.88 K",
-  },
-  {
-    title: "Total Employers",
-    value: "6500",
-  },
-  {
-    title: "Total Helpers",
-    value: "4502",
-  },
-];
 
 const DashboardPage = () => {
   return (
@@ -26,7 +12,7 @@ const DashboardPage = () => {
           <EarningSummaryChart />
         </div>
         <div className="lg:w-1/3 2xl:w-1/4">
-          <StatsGrid data={statsData} />
+          <StatsGrid />
         </div>
       </div>
       <div className="flex flex-col lg:grid lg:grid-cols-3 2xl:grid-cols-4 gap-5">

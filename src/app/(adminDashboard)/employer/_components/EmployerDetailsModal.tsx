@@ -1,12 +1,23 @@
+import { useUserDetailsQuery } from "@/redux/api/adminApi";
 import { Modal } from "antd";
 import { RiCloseLargeLine } from "react-icons/ri";
+import { formatDate } from "@/utils/formatDate";
 
 type TPropsType = {
   open: boolean;
   setOpen: (collapsed: boolean) => void;
+  userId: string;
 };
 
-const EmployerDetailsModal = ({ open, setOpen }: TPropsType) => {
+const EmployerDetailsModal = ({ open, setOpen, userId }: TPropsType) => {
+  const { data: user, isLoading } = useUserDetailsQuery(userId);
+  const details = user?.data;
+
+  const fullName =
+    details?.firstName || details?.lastName
+      ? `${details?.firstName ?? ""} ${details?.lastName ?? ""}`.trim()
+      : "No Name";
+
   return (
     <Modal
       open={open}
@@ -28,66 +39,55 @@ const EmployerDetailsModal = ({ open, setOpen }: TPropsType) => {
           </div>
         </div>
 
-        <h2 className="text-center text-xl font-semibold">Employers Details</h2>
+        <h2 className="text-center text-xl font-semibold">Employer Details</h2>
 
         {/* Email */}
-
-        <p>Email : james1234@gmail.com</p>
+        <p>Email : {details?.email ?? "No Email"}</p>
 
         {/* Details Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 ">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
           {/* Left Column */}
           <div className="space-y-4">
             <div className="space-y-1">
-              <h4 className="font-semibold text-[#2E3559]">
-                Primary Employers
-              </h4>
-              <p className="flex  gap-x-2">
-                <span className="w-[150px]"> First name: </span>{" "}
-                <span> Mr. </span>
+              <h4 className="font-semibold text-[#2E3559]">Basic Information</h4>
+
+              <p className="flex gap-x-2">
+                <span className="w-[150px]">Full Name:</span>
+                <span>{fullName}</span>
               </p>
-              <p className="flex  gap-x-2">
-                <span className="w-[150px]"> Last name: </span>{" "}
-                <span> Tan </span>
+
+              <p className="flex gap-x-2">
+                <span className="w-[150px]">Phone:</span>
+                <span>{details?.phoneNumber ?? "No phone number"}</span>
               </p>
-              <p className="flex  gap-x-2">
-                {" "}
-                <span className="w-[150px]">Phone Number: </span>{" "}
-                <span> +65-800-925-6278 </span>
+
+              <p className="flex gap-x-2">
+                <span className="w-[150px]">Gender:</span>
+                <span>{details?.gender ?? "Not provided"}</span>
+              </p>
+
+              <p className="flex gap-x-2">
+                <span className="w-[150px]">Nationality:</span>
+                <span>{details?.nationality ?? "Not provided"}</span>
               </p>
             </div>
 
             <div className="space-y-1">
-              <h4 className="font-semibold text-[#2E3559]">
-                Secondary Employers
-              </h4>
-              <p className="flex  gap-x-2">
-                {" "}
-                <span className="w-[150px]"> First name: </span>{" "}
-                <span> Mr. </span>
-              </p>
-              <p className="flex  gap-x-2">
-                {" "}
-                <span className="w-[150px]">Last name: </span>
-                <span> Tan </span>
-              </p>
-              <p className="flex  gap-x-2">
-                <span className="w-[150px]"> Phone Number: </span>{" "}
-                <span> +65-800-925-6278 </span>
-              </p>
-            </div>
+              <h4 className="font-semibold text-[#2E3559]">Account Info</h4>
 
-            <div className="space-y-1">
-              <h4 className="font-semibold text-[#2E3559]">
-                Emergency Contact
-              </h4>
-              <p className="flex  gap-x-2">
-                <span className="w-[150px]"> Person's name: </span>{" "}
-                <span> Mr. Tan </span>
+              <p className="flex gap-x-2">
+                <span className="w-[150px]">Status:</span>
+                <span className="capitalize">{details?.status}</span>
               </p>
-              <p className="flex  gap-x-2">
-                <span className="w-[170px]"> Person’s Phone Number: </span>{" "}
-                <span> +65-800-925-6278 </span>
+
+              <p className="flex gap-x-2">
+                <span className="w-[150px]">Role:</span>
+                <span className="capitalize">{details?.role}</span>
+              </p>
+
+              <p className="flex gap-x-2">
+                <span className="w-[150px]">Created At:</span>
+                <span>{details?.createdAt ? formatDate(details.createdAt) : ""}</span>
               </p>
             </div>
           </div>
@@ -95,39 +95,38 @@ const EmployerDetailsModal = ({ open, setOpen }: TPropsType) => {
           {/* Right Column */}
           <div className="space-y-4">
             <div className="space-y-1">
-              <h4 className="font-semibold text-[#2E3559]">Home Address</h4>
-              <p className="flex  gap-x-2">
-                {" "}
-                <span className="w-[150px]">Address: </span>{" "}
-                <span> Singapore </span>
-              </p>
-              <p className="flex  gap-x-2">
-                <span className="w-[150px]">City: </span>{" "}
-                <span> Singapore </span>
-              </p>
-              <p className="flex  gap-x-2">
-                <span className="w-[150px]">County: </span>{" "}
-                <span> Singapore </span>
-              </p>
-              <p className="flex  gap-x-2">
-                <span className="w-[150px]">Zip Code: </span> <span> 12345 </span>
+              <h4 className="font-semibold text-[#2E3559]">Address</h4>
+
+              <p className="flex gap-x-2">
+                <span className="w-[150px]">Address:</span>
+                <span>{details?.address ?? "No address"}</span>
               </p>
             </div>
 
             <div className="space-y-1">
               <h4 className="font-semibold text-[#2E3559]">
-                Additional Information
+                Verification
               </h4>
-              <p className="font-medium">Household Details</p>
-              <p className="text-gray-600">
-                By signing up for our auto-renewing monthly membership, which
-                will be charged to the card on file every 30 days.
+
+              <p className="flex gap-x-2">
+                <span className="w-[150px]">OTP:</span>
+                <span>{details?.verification?.otp ?? "N/A"}</span>
               </p>
 
-              <p className="font-medium pt-2">Pet Details</p>
-              <p className="text-gray-600">
-                By signing up for our auto-renewing monthly membership, which
-                will be charged to the card on file every 30 days.
+              <p className="flex gap-x-2">
+                <span className="w-[150px]">OTP Status:</span>
+                <span>
+                  {details?.verification?.status ? "Verified" : "Not Verified"}
+                </span>
+              </p>
+
+              <p className="flex gap-x-2">
+                <span className="w-[150px]">Expires At:</span>
+                <span>
+                  {details?.verification?.expiresAt
+                    ? formatDate(details.verification.expiresAt)
+                    : "N/A"}
+                </span>
               </p>
             </div>
           </div>

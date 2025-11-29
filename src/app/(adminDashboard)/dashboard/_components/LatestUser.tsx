@@ -1,6 +1,10 @@
-"use client";;
+"use client";
+
 import { Image, TableProps } from "antd";
 import DataTable from "@/utils/DataTable";
+import { useAllUsersQuery } from "@/redux/api/adminApi";
+import { format } from "date-fns";
+
 type TDataType = {
   key?: number;
   serial: string;
@@ -9,27 +13,31 @@ type TDataType = {
   date: string;
   type: string;
 };
-const data: TDataType[] = Array.from({ length: 5 }).map((data, inx) => ({
-  key: inx,
-  serial: `#${inx + 1}`,
-  name: "James Tracy",
-  email: "james1234@gmail.comm",
-  type: inx % 2 === 0 ? "User" : "Vendor",
-  date: "11 Aug, 2025",
-}));
 
 const LatestUser = () => {
+  const { data: latestUsers } = useAllUsersQuery(undefined);
+  const usersData = latestUsers?.data?.data || [];
+  // console.log("latestUsers", usersData);
+
+  const data: TDataType[] = usersData?.map((data: any, inx: number) => ({
+    key: inx + 1,
+    serial: `#${inx + 1}`,
+    name: data?.firstName,
+    email: data?.email,
+    phone: data?.phoneNumber,
+    type: data?.role,
+    date: format(new Date(data.createdAt), "dd MMM yyyy, hh:mm a"),
+  }));
 
   const columns: TableProps<TDataType>["columns"] = [
     {
       title: "Serial",
       dataIndex: "serial",
-     
     },
     {
       title: "Full Name",
       dataIndex: "name",
-      align: "center",
+      align: "start",
       render: (text, record) => (
         <div className="flex justify-center items-center gap-x-1">
           <Image
@@ -45,6 +53,11 @@ const LatestUser = () => {
     {
       title: "Email",
       dataIndex: "email",
+      align: "center",
+    },
+    {
+      title: "Phone",
+      dataIndex: "phone",
       align: "center",
     },
 

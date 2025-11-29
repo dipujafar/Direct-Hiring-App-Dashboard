@@ -16,11 +16,13 @@ const ForgetPassForm = () => {
 
   //handle password change
   const onFinish: FormProps<FieldType>["onFinish"] = (values) => {
-    console.log("Success:", values);
 
-    if (values.email) {
-      route.push("/verify-email");
-    }
+    const email = values.email
+    console.log("Success:", email);
+
+    // if (values.email) {
+    //   route.push("/verify-email");
+    // }
   };
 
   return (

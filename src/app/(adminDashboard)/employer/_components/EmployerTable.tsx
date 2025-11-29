@@ -1,59 +1,99 @@
 "use client";
-import { Image, Input, message, Popconfirm, PopconfirmProps, TableProps } from "antd";
+import {
+  Image,
+  Input,
+  message,
+  Popconfirm,
+  PopconfirmProps,
+  TableProps,
+} from "antd";
 // import UserDetails from "./UserDetails";
 import { useState } from "react";
 import DataTable from "@/utils/DataTable";
 import { Eye, Search, Trash2 } from "lucide-react";
 import EmployerDetailsModal from "./EmployerDetailsModal";
+import { useAllUsersQuery, useDeleteUserMutation } from "@/redux/api/adminApi";
+import { formatDate } from "@/utils/formatDate";
+import { toast } from "sonner";
+import { getErrorMessage } from "@/utils/getErrorMessage";
 
 type TDataType = {
-  key?: number;
-  serial: number;
+  key?: string;
+  serial: string;
   name: string;
   email: string;
   date: string;
   phone: string;
-};
-const data: TDataType[] = Array.from({ length: 18 }).map((_, inx) => ({
-  key: inx,
-  serial: inx + 1,
-  name: "Devon Lane",
-  email: "james1234@gmail.comm",
-  date: "1 Aug, 2025",
-  phone: "1234567890",
-}));
-
-const confirmBlock: PopconfirmProps["onConfirm"] = (e) => {
-  console.log(e);
-  message.success("Deleted the Employer");
+  profile: string;
 };
 
 const EmployerTable = () => {
+  const [selectedUserId, setSelectedUserId] = useState<string>("");
+  const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
+
+  const [deleteEmployee] = useDeleteUserMutation();
+
+  const { data: allUsers } = useAllUsersQuery({
+    searchTerm: search,
+    role: "employee",
+  });
+  const employees = allUsers?.data?.data;
+  const meta = allUsers?.data?.meta;
+
+  const justEmployee = employees?.filter(
+    (user: any) => user?.role === "employee"
+  );
+
+  const confirmBlock: PopconfirmProps["onConfirm"] = async (e) => {
+    try {
+      const res = await deleteEmployee(selectedUserId).unwrap();
+      if (res.success) {
+        toast.success(res.message);
+      }
+    } catch (error) {
+      console.log("user delete error::", error);
+      toast.error(getErrorMessage(error));
+    }
+  };
+
+  const data: TDataType[] = justEmployee?.map((itm: any) => ({
+    key: itm?._id,
+    serial: itm?._id?.slice(0, 10),
+    name:
+      itm?.firstName && itm?.lastName
+        ? `${itm.firstName} ${itm.lastName}`
+        : "No Name",
+    email: itm?.email,
+    date: formatDate(itm?.createdAt),
+    phone: itm?.phoneNumber,
+    profile: itm?.profile,
+  }));
 
   const columns: TableProps<TDataType>["columns"] = [
     {
-      title: "#SI",
+      title: `#SL - Total (${meta?.total})`,
       dataIndex: "serial",
     },
 
     {
-      title: "User Name",
+      title: "Name",
       dataIndex: "name",
       align: "center",
-      render: (text, record) => (
-        <div className="flex justify-center items-center gap-x-1">
+      render: (_, record) => (
+        <div className="flex justify-center items-center gap-x-2">
           <Image
-            src={"/user-profile.png"}
+            src={record?.profile || "/user-profile.png"}
             alt="profile-picture"
             width={40}
             height={40}
-            className="size-10"
-          ></Image>
-          <p>{text}</p>
+            className="rounded-full object-cover"
+          />
+          <p>{record?.name}</p>
         </div>
       ),
     },
+
     {
       title: "Email",
       dataIndex: "email",
@@ -74,13 +114,18 @@ const EmployerTable = () => {
     {
       title: "Action",
       dataIndex: "action",
-      render: () => (
+      render: (_, record) => (
         <div className="flex gap-x-2">
           <Eye
             size={22}
+            className=" hover:cursor-pointer"
             color="var(--color-primary-gray)"
-            onClick={() => setOpen(!open)}
+            onClick={() => {
+              setOpen(true);
+              setSelectedUserId(record.key as string);
+            }}
           />
+
           <Popconfirm
             title="Delete the employer"
             description="Are you sure to delete this employer?"
@@ -88,7 +133,12 @@ const EmployerTable = () => {
             okText="Yes"
             cancelText="No"
           >
-            <Trash2 size={20} color="#CD0335" />
+            <Trash2
+              onClick={() => setSelectedUserId(record.key as string)}
+              size={20}
+              className=" hover:cursor-pointer"
+              color="#CD0335"
+            />
           </Popconfirm>
         </div>
       ),
@@ -105,12 +155,19 @@ const EmployerTable = () => {
           className="!w-[250px] lg:!w-[350px] !py-2 !bg-white  placeholder:text-white"
           placeholder="Search..."
           prefix={<Search size={20} color="#000"></Search>}
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
         ></Input>
       </div>
-      <DataTable columns={columns} data={data} pageSize={10}></DataTable>
+      <DataTable
+        columns={columns}
+        data={data}
+        pageSize={meta?.limit || 10}
+      ></DataTable>
       <EmployerDetailsModal
         open={open}
         setOpen={setOpen}
+        userId={selectedUserId}
       ></EmployerDetailsModal>
     </div>
   );
