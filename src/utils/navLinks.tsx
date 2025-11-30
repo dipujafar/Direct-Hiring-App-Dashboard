@@ -33,7 +33,7 @@ export const navLinks = [
   {
     key: "post",
     icon: <ClipboardPlus size={18} />,
-    label: <Link href={"/post"}>Post</Link>,
+    label: <Link href={"/post"}>Announcement</Link>,
   },
 
   {

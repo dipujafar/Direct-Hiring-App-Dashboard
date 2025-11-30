@@ -5,6 +5,15 @@ export const tagTypes = {
   admin: "admin",
   earning: "earning",
   helper: "helper",
+  announcement: "announcement",
 } as const;
 
-export const tagTypesList = [tagTypes.auth, tagTypes.profile, tagTypes.user];
+export const tagTypesList = [
+  tagTypes.auth,
+  tagTypes.profile,
+  tagTypes.user,
+  tagTypes.admin,
+  tagTypes.earning,
+  tagTypes.helper,
+  tagTypes.announcement,
+];

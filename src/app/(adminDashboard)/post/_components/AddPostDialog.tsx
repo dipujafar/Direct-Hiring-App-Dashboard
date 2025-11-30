@@ -6,7 +6,7 @@ import { Dispatch, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { PlusCircle, Upload, X } from "lucide-react";
+import { Upload, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -14,7 +14,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Form,
@@ -25,9 +24,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
+import { getErrorMessage } from "@/utils/getErrorMessage";
+import { toast } from "sonner";
+import { useAddAnnouncementMutation } from "@/redux/api/announcementApi";
+import { Input } from "antd";
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png"];
+const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
 const formSchema = z.object({
   image: z
@@ -36,11 +38,8 @@ const formSchema = z.object({
     .refine(
       (files) => files?.[0]?.size <= MAX_FILE_SIZE,
       "Max file size is 5MB."
-    )
-    .refine(
-      (files) => ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type),
-      ".jpg, .jpeg, and .png files are accepted."
     ),
+  title: z.string(),
   description: z
     .string()
     .min(1, "Description is required")
@@ -61,11 +60,10 @@ export default function UploadPostDialog({
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
+  const [createAnnouncement] = useAddAnnouncementMutation();
+
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      description: "",
-    },
   });
 
   const handleDrag = (e: React.DragEvent) => {
@@ -125,15 +123,41 @@ export default function UploadPostDialog({
     }
   };
 
-  const onSubmit = (data: FormData) => {
-    console.log("Form submitted:", {
-      image: data.image[0],
+  const onSubmit = async (data: FormData) => {
+    const announceInfo = {
       description: data.description,
-    });
-    // Handle form submission here
-    setOpen(false);
-    form.reset();
-    setSelectedFile(null);
+      title: data.title,
+    };
+
+    try {
+      const formData = new FormData();
+      formData.append("data", JSON.stringify(announceInfo));
+
+      if (selectedFile) {
+        formData.append("image", selectedFile);
+      }
+
+      const res = await createAnnouncement(formData).unwrap();
+      // console.log("re__", res);
+
+      if (res.success) {
+        toast.success(res.message);
+        setOpen(false);
+        form.reset();
+        setSelectedFile(null);
+        setImagePreview(null);
+        // Reset the file input
+        const fileInput = document.querySelector(
+          'input[type="file"]'
+        ) as HTMLInputElement;
+        if (fileInput) {
+          fileInput.value = "";
+        }
+      }
+    } catch (error) {
+      console.log("announcement post error::", error);
+      toast.error(getErrorMessage(error));
+    }
   };
 
   const handleClose = () => {
@@ -186,7 +210,6 @@ export default function UploadPostDialog({
                       >
                         <input
                           type="file"
-                          accept="image/jpeg,image/jpg,image/png"
                           onChange={handleFileSelect}
                           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                         />
@@ -236,6 +259,26 @@ export default function UploadPostDialog({
                           </div>
                         )}
                       </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-base font-medium">
+                      Title
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        className=" py-3 border border-white shadow-md"
+                        placeholder="Enter Title"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
