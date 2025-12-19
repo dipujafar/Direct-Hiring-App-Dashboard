@@ -54,7 +54,7 @@ export default function LoginForm() {
 
     try {
       const res = await makeLogin(values).unwrap();
-      // console.log("res", res.data.accessToken);
+      console.log("res", res.data.accessToken);
 
       if (res.success) {
         dispatch(
