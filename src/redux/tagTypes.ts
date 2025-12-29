@@ -6,6 +6,7 @@ export const tagTypes = {
   earning: "earning",
   helper: "helper",
   announcement: "announcement",
+  pat: "pat",
 } as const;
 
 export const tagTypesList = [
@@ -16,4 +17,5 @@ export const tagTypesList = [
   tagTypes.earning,
   tagTypes.helper,
   tagTypes.announcement,
+  tagTypes.pat,
 ];

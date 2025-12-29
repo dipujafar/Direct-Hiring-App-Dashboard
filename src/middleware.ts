@@ -16,5 +16,14 @@ export default function middleware(req: any) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*"],
+  matcher: [
+    "/dashboard/:path*",
+    "/earnings/:path*",
+    "/employer/:path*",
+    "/helper/:path*",
+    "/admin-messaging-panel/:path*",
+    "/post/:path*",
+    "/settings/:path*",
+    "/profile/:path*",
+  ],
 };
