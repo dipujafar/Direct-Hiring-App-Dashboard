@@ -17,7 +17,7 @@ type TDataType = {
 const LatestUser = () => {
   const { data: latestUsers } = useAllUsersQuery(undefined);
   const usersData = latestUsers?.data?.data || [];
-  console.log("latestUsers", usersData);
+  // console.log("latestUsers", usersData);
 
   const data: TDataType[] = usersData?.map((data: any, inx: number) => ({
     key: inx + 1,

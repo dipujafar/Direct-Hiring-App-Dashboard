@@ -5,9 +5,9 @@ import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FaArrowLeft } from "react-icons/fa6";
-import "react-quill/dist/quill.snow.css";
 
 // Dynamically import ReactQuill with SSR disabled
+// @ts-ignore
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
 const AboutUsEditor = () => {
@@ -41,6 +41,7 @@ const AboutUsEditor = () => {
         <h4 className="text-2xl font-medium text-text-color">About Us</h4>
       </div>
       <ReactQuill
+      // @ts-ignore
         modules={moduleConest}
         theme="snow"
         value={value}
